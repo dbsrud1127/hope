@@ -28,6 +28,13 @@ mybatis:
     map-underscore-to-camel-case: true
     jdbc-type-for-null: 'NULL'
 
+# 회원가입 이메일 인증 설정
+# TODO: 메일 발송(SMTP) 구현 전까지 개발 환경에서만 EMAIL_DEV_CODE_ENABLED=true로 켜서
+#       인증번호를 발송 API 응답(devCode)에 담는다. 운영에서는 반드시 false (기본값).
+member:
+  email-verification:
+    dev-code-enabled: ${EMAIL_DEV_CODE_ENABLED:false}
+
 # Python 계산 서버 연결 설정
 # TODO: CalcClient 구현 후 실제 서버 연동 및 토큰 인증 검증
 calc:

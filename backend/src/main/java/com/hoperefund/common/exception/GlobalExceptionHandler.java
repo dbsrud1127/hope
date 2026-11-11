@@ -1,9 +1,11 @@
 package com.hoperefund.common.exception;
 
 import com.hoperefund.common.dto.ErrorResponseDTO;
+import jakarta.validation.ConstraintViolation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,17 +19,33 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice // 여러 Controller에서 발생한 예외를 공통 처리
 public class GlobalExceptionHandler {
 
+    private static final String DEFAULT_VALIDATION_MESSAGE = "입력값을 확인해 주세요.";
+
     // 요청 데이터 유효성 검증 오류 @ExceptionHandler - 어떤 종류의 예외를 처리할지 지정
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO>
             handleValidation( // ResponseEntity - HTTP 상태 코드와 응답 본문을 함께 반환
             MethodArgumentNotValidException e) {
 
-        ErrorResponseDTO response = new ErrorResponseDTO("VALIDATION", "입력값을 확인해 주세요.");
+        ErrorResponseDTO response = new ErrorResponseDTO("VALIDATION", validationMessage(e));
 
         return ResponseEntity // HTTP 상태 코드와 응답 본문을 함께 반환
                 .status(HttpStatus.BAD_REQUEST) // 400 입력 오류
                 .body(response);
+    }
+
+    // DTO에 message = "..."로 직접 적은 문구가 있으면 그 문구를, 없으면(기본 영어·라이브러리 문구) 공통 문구를 쓴다
+    private static String validationMessage(MethodArgumentNotValidException e) {
+
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        if (fieldError == null || !fieldError.contains(ConstraintViolation.class)) {
+            return DEFAULT_VALIDATION_MESSAGE;
+        }
+        String template = fieldError.unwrap(ConstraintViolation.class).getMessageTemplate();
+        if (template == null || template.startsWith("{")) {
+            return DEFAULT_VALIDATION_MESSAGE; // 라이브러리 기본 문구 템플릿
+        }
+        return fieldError.getDefaultMessage();
     }
 
     // JSON 형식 오류
@@ -68,7 +86,7 @@ public class GlobalExceptionHandler {
 
         // 민감정보가 포함될 가능성이 있는 상세 예외 메시지는 출력하지 않음
         org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class)
-                .error("서버 오류 발생: {}", e.getClass().getSimpleName());
+                .error("서버 오류 발생: {}", e.getClass().getSimpleName(), e);
 
         ErrorResponseDTO response = new ErrorResponseDTO("SERVER_ERROR", "잠시 후 다시 시도해 주세요.");
 

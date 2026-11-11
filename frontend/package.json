@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,json}\"",
-    "test": "node tests/prototype-flows.mjs && node tests/feedback-contract.mjs && node tests/render-pages.mjs"
+    "test": "node src/api/http.test.js && node src/api/member-api.test.js && node tests/prototype-flows.mjs && node tests/feedback-contract.mjs && node tests/render-pages.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

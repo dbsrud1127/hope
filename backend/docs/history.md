@@ -1,5 +1,11 @@
 # 작업 이력
 
+### [2026-11-10] F-01-01 회원가입 React 연결 · 중복확인 · 이메일 인증 (커밋 전)
+- **작업 내용**: 중복확인 API · 이메일 인증 API(서버 메모리 · 메일 미발송) 추가, 가입 주소 `/api/auth/members`로 변경, 응답 필드 변경, React 화면을 실제 API에 연결
+- **변경 사유**: F-01-01 지침 (React → Spring Boot → Oracle 끝까지 연결)
+- **검증 결과**: `./mvnw -B verify` → BUILD SUCCESS · Tests 45 · `npm test` · `npm run build` 통과
+  - 미검증: 서버 실행 후 API 호출 · 브라우저 가입 · Oracle 저장 → [tasks.md](tasks.md) 「다음에 할 일」
+
 ### [2026-11-08] 회원가입 API 구현 · 공통 업무 오류 처리 추가
 - **작업 내용**
   - 추가: `member/controller/MemberController.java` · `member/service/MemberService.java` · `member/mapper/MemberMapper.java` · `member/dto/MemberSignupRequestDTO.java` · `member/dto/MemberSignupResponseDTO.java` · `member/dto/MemberInsertDTO.java` · `resources/mapper/member/MemberMapper.xml`
